@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { getToken } from './authService';
 
-const API_URL = 'https://habit-tracker-backend-0576.onrender.com';
 
 export interface Habit {
     id: number;
@@ -103,16 +102,3 @@ export const getCompletionCounts = async (
     }
 };
 
-// Set a custom date for testing
-export const setCustomDate = async (date: string): Promise<string> => {
-    try {
-        // This is an open endpoint as configured in SecurityConfig
-        const response = await axios.post('/api/habits/set-date', null, {
-            params: { date }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Failed to set custom date:', error);
-        throw error;
-    }
-};
