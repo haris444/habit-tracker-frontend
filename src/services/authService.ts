@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://habit-tracker-backend-0576.onrender.com';
+const API_URL = 'https://habit-tracker-backend-0576.onrender.com/api/auth';
 
 export interface User {
     id: number;
