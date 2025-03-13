@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import HabitCard from "./components/HabitCard";
 import DateSetter from "./components/DateSetter";
 import ThemeToggle from "./theme/ThemeToggle";
-import { useTheme } from "./theme/ThemeContext";
 import { Habit, createHabit, deleteHabit, getCompletionCounts, getCurrentDate, getHabits } from "./services/apiService";
 import { User, getUser, isAuthenticated, login, logout, register } from "./services/authService";
 
 function App() {
-    const { theme } = useTheme(); // Get current theme
     const [habits, setHabits] = useState<Habit[]>([]);
     const [newHabit, setNewHabit] = useState("");
     const [user, setUser] = useState<User | null>(null);
@@ -119,13 +117,13 @@ function App() {
             console.error("Data initialization failed:", error);
         }
     };
-
+/*
     // Refresh data when needed (separate from initialization)
     const refreshData = async () => {
         if (!isAuthenticated() || !currentDate) return;
         await fetchHabits();
         await fetchCompletionCounts(currentDate);
-    };
+    };*/
 
     // Run initialization when user changes (on login/register)
     useEffect(() => {
