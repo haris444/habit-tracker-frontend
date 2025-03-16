@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Habit, completeHabit } from "../services/apiService";
 import { useTheme } from "../theme/ThemeContext";
-import "./HabitCard.css";
 
 interface HabitCardProps {
   habit: Habit;
@@ -12,9 +11,8 @@ interface HabitCardProps {
 const HabitCard = ({ habit, onUpdate }: HabitCardProps) => {
   const { theme } = useTheme();
   const [streak, setStreak] = useState(habit.streak);
-  const [isUpdating, setIsUpdating] = useState(false); // New state for inline feedback
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  // This useEffect ensures the local streak state updates when habit prop changes
   useEffect(() => {
     setStreak(habit.streak);
   }, [habit.streak]);
@@ -23,7 +21,7 @@ const HabitCard = ({ habit, onUpdate }: HabitCardProps) => {
 
   const handleCompleteHabit = async () => {
     console.log("Completing habit:", habit.id);
-    setIsUpdating(true); // Start inline feedback
+    setIsUpdating(true);
     try {
       const updatedHabit = await completeHabit(habit.id);
       console.log("Completion response:", updatedHabit);
@@ -33,7 +31,7 @@ const HabitCard = ({ habit, onUpdate }: HabitCardProps) => {
       console.error("Failed to complete habit:", error);
       alert("Failed to complete habit: " + (error instanceof Error ? error.message : String(error)));
     } finally {
-      setIsUpdating(false); // Stop inline feedback
+      setIsUpdating(false);
     }
   };
 
@@ -62,20 +60,20 @@ const HabitCard = ({ habit, onUpdate }: HabitCardProps) => {
         ))}
       </div>
       <button
-        onClick={handleCompleteHabit}
-        className="mt-4 px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 flex items-center justify-center"
-        style={{
-            backgroundColor: theme === 'dark' ? 'white' : '#f9fafb',
-            color: 'var(--card-from)'
-        }}
-        disabled={isUpdating}
-        >
-        {isUpdating ? (
-            <div className="inline-block w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-        ) : (
-            "Complete"
-        )}
-        </button>
+  onClick={handleCompleteHabit}
+  className="mt-4 px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 flex items-center justify-center"
+  style={{
+    backgroundColor: theme === 'dark' ? 'white' : '#f9fafb',
+    color: 'var(--card-from)'
+  }}
+  disabled={isUpdating}
+>
+  {isUpdating ? (
+    <div className="inline-block w-4 h-4 border-2 border-t-transparent border-[#4ade80] rounded-full animate-spin"></div>
+  ) : (
+    "Complete"
+  )}
+</button>
     </motion.div>
   );
 };
