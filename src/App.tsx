@@ -14,7 +14,8 @@ function App() {
   const [password, setPassword] = useState("");
   const [completionCounts, setCompletionCounts] = useState<Record<string, number>>({});
   const [currentDate, setCurrentDate] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // For initial data fetch (Render spin-up)
+  const [isAuthLoading, setIsAuthLoading] = useState(false); // For login/register only
 
   // Set document title dynamically
   useEffect(() => {
@@ -34,7 +35,7 @@ function App() {
   }, []);
 
   const handleLogin = async () => {
-    setIsLoading(true);
+    setIsAuthLoading(true); // Show spinner during login
     try {
       const loggedInUser = await login(username, password);
       setUser(loggedInUser);
@@ -45,12 +46,12 @@ function App() {
       console.error("Login failed:", error);
       alert("Invalid credentials");
     } finally {
-      setIsLoading(false);
+      setIsAuthLoading(false); // Hide spinner
     }
   };
 
   const handleRegister = async () => {
-    setIsLoading(true);
+    setIsAuthLoading(true); // Show spinner during register
     try {
       const newUser = await register(username, password);
       setUser(newUser);
@@ -61,7 +62,7 @@ function App() {
       console.error("Registration failed:", error);
       alert("Username taken or error");
     } finally {
-      setIsLoading(false);
+      setIsAuthLoading(false); // Hide spinner
     }
   };
 
@@ -83,7 +84,7 @@ function App() {
       console.error("Failed to fetch current date:", error);
       return null;
     }
-  }, []); // No dependencies, stable
+  }, []);
 
   const fetchHabits = useCallback(async () => {
     try {
@@ -95,7 +96,7 @@ function App() {
       console.error("Failed to fetch habits:", error);
       return [];
     }
-  }, []); // No dependencies, stable
+  }, []);
 
   const fetchCompletionCounts = useCallback(async (date: string) => {
     try {
@@ -113,7 +114,7 @@ function App() {
       console.error("Failed to fetch completion counts:", error);
       return {};
     }
-  }, []); // No dependencies, stable
+  }, []);
 
   const initializeData = useCallback(async () => {
     if (!isAuthenticated()) return;
@@ -131,6 +132,7 @@ function App() {
 
   useEffect(() => {
     if (user) {
+      setIsLoading(true); // Show spinner for initial fetch (Render spin-up)
       initializeData().finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);
@@ -139,7 +141,6 @@ function App() {
 
   const addHabit = async () => {
     if (!newHabit || !isAuthenticated()) return;
-    setIsLoading(true);
     try {
       const habit = await createHabit(newHabit);
       setHabits([...habits, habit]);
@@ -147,34 +148,26 @@ function App() {
       if (currentDate) await fetchCompletionCounts(currentDate);
     } catch (error) {
       console.error("Failed to add habit:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const removeHabit = async (id: number) => {
-    setIsLoading(true);
     try {
       await deleteHabit(id);
       setHabits(habits.filter((habit) => habit.id !== id));
       if (currentDate) await fetchCompletionCounts(currentDate);
     } catch (error) {
       console.error("Failed to delete habit:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const updateHabit = async (updatedHabit: Habit) => {
-    setIsLoading(true);
     try {
       setHabits(habits.map((habit) => (habit.id === updatedHabit.id ? updatedHabit : habit)));
       const date = await fetchCurrentDate();
       if (date) await fetchCompletionCounts(date);
     } catch (error) {
       console.error("Failed to update habit:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -196,7 +189,7 @@ function App() {
   };
   const monthName = now.toLocaleString("default", { month: "long" });
 
-  if (isLoading) {
+  if (isLoading || isAuthLoading) {
     return <LoadingSpinner />;
   }
 
@@ -229,17 +222,17 @@ function App() {
               onClick={handleLogin}
               className="px-4 py-2 rounded hover:opacity-90"
               style={{ backgroundColor: 'var(--button-primary)', color: 'white' }}
-              disabled={isLoading}
+              disabled={isAuthLoading}
             >
-              {isLoading ? "Logging in..." : "Login"}
+              {isAuthLoading ? "Logging in..." : "Login"}
             </button>
             <button
               onClick={handleRegister}
               className="px-4 py-2 rounded hover:opacity-90"
               style={{ backgroundColor: 'var(--button-primary)', color: 'white' }}
-              disabled={isLoading}
+              disabled={isAuthLoading}
             >
-              {isLoading ? "Registering..." : "Register"}
+              {isAuthLoading ? "Registering..." : "Register"}
             </button>
           </div>
         </div>
