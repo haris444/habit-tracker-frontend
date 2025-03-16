@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import HabitCard from "./components/HabitCard";
 import DateSetter from "./components/DateSetter";
 import ThemeToggle from "./theme/ThemeToggle";
@@ -14,7 +14,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [completionCounts, setCompletionCounts] = useState<Record<string, number>>({});
   const [currentDate, setCurrentDate] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Initial loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   // Set document title dynamically
   useEffect(() => {
@@ -34,34 +34,34 @@ function App() {
   }, []);
 
   const handleLogin = async () => {
-    setIsLoading(true); // Show loader during login
+    setIsLoading(true);
     try {
       const loggedInUser = await login(username, password);
       setUser(loggedInUser);
       setUsername("");
       setPassword("");
-      await initializeData(); // Initialize data after login
+      await initializeData();
     } catch (error) {
       console.error("Login failed:", error);
       alert("Invalid credentials");
     } finally {
-      setIsLoading(false); // Hide loader when done
+      setIsLoading(false);
     }
   };
 
   const handleRegister = async () => {
-    setIsLoading(true); // Show loader during register
+    setIsLoading(true);
     try {
       const newUser = await register(username, password);
       setUser(newUser);
       setUsername("");
       setPassword("");
-      await initializeData(); // Initialize data after register
+      await initializeData();
     } catch (error) {
       console.error("Registration failed:", error);
       alert("Username taken or error");
     } finally {
-      setIsLoading(false); // Hide loader when done
+      setIsLoading(false);
     }
   };
 
@@ -73,7 +73,7 @@ function App() {
     setCurrentDate(null);
   };
 
-  const fetchCurrentDate = async () => {
+  const fetchCurrentDate = useCallback(async () => {
     try {
       const date = await getCurrentDate();
       setCurrentDate(date);
@@ -83,9 +83,9 @@ function App() {
       console.error("Failed to fetch current date:", error);
       return null;
     }
-  };
+  }, []); // No dependencies, stable
 
-  const fetchHabits = async () => {
+  const fetchHabits = useCallback(async () => {
     try {
       const fetchedHabits = await getHabits();
       console.log("Fetched habits with streaks:", fetchedHabits.map(h => `${h.name}: ${h.streak}`));
@@ -95,9 +95,9 @@ function App() {
       console.error("Failed to fetch habits:", error);
       return [];
     }
-  };
+  }, []); // No dependencies, stable
 
-  const fetchCompletionCounts = async (date: string) => {
+  const fetchCompletionCounts = useCallback(async (date: string) => {
     try {
       const now = new Date(date);
       const start = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -113,10 +113,9 @@ function App() {
       console.error("Failed to fetch completion counts:", error);
       return {};
     }
-  };
+  }, []); // No dependencies, stable
 
-  // Main data initialization function
-  const initializeData = async () => {
+  const initializeData = useCallback(async () => {
     if (!isAuthenticated()) return;
 
     try {
@@ -128,16 +127,15 @@ function App() {
     } catch (error) {
       console.error("Data initialization failed:", error);
     }
-  };
+  }, [fetchCurrentDate, fetchHabits, fetchCompletionCounts]);
 
-  // Run initialization when user changes (on login/register)
   useEffect(() => {
     if (user) {
       initializeData().finally(() => setIsLoading(false));
     } else {
-      setIsLoading(false); // No user, no loading
+      setIsLoading(false);
     }
-  }, [user]);
+  }, [user, initializeData]);
 
   const addHabit = async () => {
     if (!newHabit || !isAuthenticated()) return;
@@ -180,7 +178,6 @@ function App() {
     }
   };
 
-  // Calendar Logic
   const now = currentDate ? new Date(currentDate) : new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -200,7 +197,7 @@ function App() {
   const monthName = now.toLocaleString("default", { month: "long" });
 
   if (isLoading) {
-    return <LoadingSpinner />; // Show loader during login/register
+    return <LoadingSpinner />;
   }
 
   if (!user) {
@@ -232,7 +229,7 @@ function App() {
               onClick={handleLogin}
               className="px-4 py-2 rounded hover:opacity-90"
               style={{ backgroundColor: 'var(--button-primary)', color: 'white' }}
-              disabled={isLoading} // Disable button while loading
+              disabled={isLoading}
             >
               {isLoading ? "Logging in..." : "Login"}
             </button>
@@ -240,7 +237,7 @@ function App() {
               onClick={handleRegister}
               className="px-4 py-2 rounded hover:opacity-90"
               style={{ backgroundColor: 'var(--button-primary)', color: 'white' }}
-              disabled={isLoading} // Disable button while loading
+              disabled={isLoading}
             >
               {isLoading ? "Registering..." : "Register"}
             </button>
