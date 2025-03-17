@@ -250,17 +250,10 @@ function App() {
   return (
     <div className="min-h-screen p-6 sm:p-8" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       <div className="max-w-3xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-10 gap-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">Habit Tracker</h1>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+        <div className="flex flex-row justify-between items-center mb-8 sm:mb-10 gap-2">
+          <h1 className="text-xl sm:text-3xl font-bold truncate">Habit Tracker</h1>
+          <div className="flex flex-row items-center gap-2 sm:gap-4">
             <ThemeToggle />
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 rounded-lg hover:opacity-90 text-sm sm:text-base w-full sm:w-auto"
-              style={{ backgroundColor: 'var(--button-delete)', color: 'white' }}
-            >
-              Logout
-            </button>
           </div>
         </div>
         <div className="flex mb-8 sm:mb-10">
@@ -326,10 +319,40 @@ function App() {
               );
             })}
           </div>
+          
+          {/* Calendar Legend */}
+          <div className="mt-4 mb-6 flex justify-center items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div 
+                className="w-4 h-4 rounded-full" 
+                style={{ backgroundColor: "var(--calendar-color-red)" }}
+              ></div>
+              <span className="text-xs sm:text-sm">No habits finished</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div 
+                className="w-4 h-4 rounded-full" 
+                style={{ backgroundColor: "var(--calendar-color-green)" }}
+              ></div>
+              <span className="text-xs sm:text-sm">All habits finished</span>
+            </div>
+          </div>
         </div>
-        <div className="mt-12 sm:mt-16 pt-6" style={{ borderTop: `1px solid var(--bg-tertiary)` }}>
-          <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Testing Tools</h2>
-          <DateSetter onDateSet={initializeData} currentDate={currentDate} />
+        
+        <div className="mt-8 sm:mt-12 pt-6 flex flex-col gap-6" style={{ borderTop: `1px solid var(--bg-tertiary)` }}>
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 rounded-lg hover:opacity-90 text-sm sm:text-base w-full sm:w-48 mx-auto"
+            style={{ backgroundColor: 'var(--button-delete)', color: 'white' }}
+          >
+            Logout
+          </button>
+          
+          <div className="pt-4" style={{ borderTop: `1px solid var(--bg-tertiary)` }}>
+            <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Testing Tools</h2>
+            <DateSetter onDateSet={initializeData} currentDate={currentDate} />
+          </div>
         </div>
         <WhyThisAppIsCool />
       </div>

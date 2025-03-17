@@ -131,11 +131,11 @@ const WhyThisAppIsCool = () => {
       
       <div className="mt-6 pt-4 text-center text-sm opacity-70" style={{ borderTop: '1px solid var(--bg-tertiary)' }}>
         Built by Theo | Full-Stack Developer |{' '}
-        <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">
+        <a href="https://github.com/haris444" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">
           GitHub
         </a>{' '}
         |{' '}
-        <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">
+        <a href="https://www.linkedin.com/in/theocharis-vasilakis/" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">
           LinkedIn
         </a>
       </div>
