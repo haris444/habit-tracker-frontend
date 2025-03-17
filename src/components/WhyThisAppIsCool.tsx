@@ -28,10 +28,10 @@ const WhyThisAppIsCool = () => {
       id: 'frontend',
       title: '💻 Frontend',
       content: [
-        'React with TypeScript enforces static typing and component reusability',
-        'Framer Motion implements performant, GPU-accelerated animations',
-        'Tailwind CSS provides utility-first styling with responsive design principles',
-        'Habit calendar leverages state management and real-time updates'
+        'React with TypeScript',
+        'Framer Motion - GPU-accelerated animations',
+        'Tailwind CSS with responsive design principles',
+        'Habit calendar & cards leverages state management and real-time updates'
       ]
     },
     {
