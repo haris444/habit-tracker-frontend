@@ -5,6 +5,8 @@ const funFacts = [
   "Did you know? Building habits takes 21 days on average!",
   "Fun fact: 80% of New Year's resolutions fail by February!",
   "Stay consistent—streaks are the key to success!",
+  "Fun fact: People are 42% more likely to achieve goals if they write them down!",
+  "Listening to the same song every time you start a habit can trick your brain into craving it—hello, Pavlov!"
 ];
 
 const LoadingSpinner: React.FC = () => {

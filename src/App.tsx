@@ -5,6 +5,7 @@ import ThemeToggle from "./theme/ThemeToggle";
 import { Habit, createHabit, deleteHabit, getCompletionCounts, getCurrentDate, getHabits } from "./services/apiService";
 import { User, getUser, isAuthenticated, login, logout, register } from "./services/authService";
 import LoadingSpinner from "./components/LoadingSpinner";
+import WhyThisAppIsCool from "./components/WhyThisAppIsCool"
 
 function App() {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -16,6 +17,7 @@ function App() {
   const [currentDate, setCurrentDate] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true); // For initial data fetch (Render spin-up)
   const [isAuthLoading, setIsAuthLoading] = useState(false); // For login/register only
+  const [isAddingHabit, setIsAddingHabit] = useState(false); // New state for Add button loading
 
   // Set document title dynamically
   useEffect(() => {
@@ -141,6 +143,8 @@ function App() {
 
   const addHabit = async () => {
     if (!newHabit || !isAuthenticated()) return;
+    
+    setIsAddingHabit(true); // Show spinner while adding
     try {
       const habit = await createHabit(newHabit);
       setHabits([...habits, habit]);
@@ -148,6 +152,9 @@ function App() {
       if (currentDate) await fetchCompletionCounts(currentDate);
     } catch (error) {
       console.error("Failed to add habit:", error);
+      alert("Failed to add habit: " + (error instanceof Error ? error.message : String(error)));
+    } finally {
+      setIsAddingHabit(false); // Hide spinner
     }
   };
 
@@ -184,7 +191,7 @@ function App() {
     if (ratio >= 1) return { backgroundColor: "var(--calendar-color-green)" };
     const percent = ratio * 100;
     return {
-      background: `linear-gradient(to right, var(--calendar-color-red), var(--calendar-color-yellow) ${percent}%, var(--calendar-color-green) ${percent}%)`,
+      background: `linear-gradient(to right,var(--calendar-color-green) ${percent}%,  var(--calendar-color-yellow) ${percent}%, var(--calendar-color-red) )`,
     };
   };
   const monthName = now.toLocaleString("default", { month: "long" });
@@ -241,61 +248,60 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-      <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Habit Tracker (User: {user.username})</h1>
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen p-6 sm:p-8" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+      <div className="max-w-3xl mx-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-10 gap-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">Habit Tracker</h1>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             <ThemeToggle />
             <button
               onClick={handleLogout}
-              className="px-4 py-2 rounded hover:opacity-90"
+              className="px-4 py-2 rounded-lg hover:opacity-90 text-sm sm:text-base w-full sm:w-auto"
               style={{ backgroundColor: 'var(--button-delete)', color: 'white' }}
             >
               Logout
             </button>
           </div>
         </div>
-        <div className="flex mb-6">
+        <div className="flex mb-8 sm:mb-10">
           <input
             type="text"
             value={newHabit}
             onChange={(e) => setNewHabit(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && newHabit.trim() && !isAddingHabit) {
+                addHabit();
+              }
+            }}
             placeholder="New habit..."
-            className="flex-1 p-2 rounded-l-lg"
+            className="flex-1 p-3 rounded-l-lg text-sm sm:text-base"
             style={{ backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)' }}
+            disabled={isAddingHabit}
           />
           <button
             onClick={addHabit}
-            className="px-4 py-2 rounded-r-lg hover:opacity-90"
+            className="px-4 py-3 rounded-r-lg hover:opacity-90 text-sm sm:text-base flex items-center justify-center min-w-[80px]"
             style={{ backgroundColor: 'var(--button-primary)', color: 'white' }}
+            disabled={isAddingHabit || !newHabit.trim()}
           >
-            Add
+            {isAddingHabit ? (
+              <div className="inline-block w-4 h-4 border-2 border-t-transparent border-[#4ade80] rounded-full animate-spin"></div>
+            ) : (
+              "Add"
+            )}
           </button>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-6 sm:space-y-8">
           {habits.map((habit) => (
-            <div key={habit.id} className="flex items-center gap-4">
-              <HabitCard
-                habit={habit}
-                onUpdate={updateHabit}
-              />
-              <button
-                onClick={() => removeHabit(habit.id)}
-                className="hover:opacity-90"
-                style={{ color: 'var(--button-delete)' }}
-              >
-                Delete
-              </button>
-            </div>
+            <HabitCard key={habit.id} habit={habit} onUpdate={updateHabit} onDelete={removeHabit} />
           ))}
         </div>
         {/* Calendar */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">
+        <div className="mt-10 sm:mt-12">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
             {monthName} {now.getFullYear()}
           </h2>
-          <div className="grid grid-cols-7 gap-2 text-center">
+          <div className="grid grid-cols-7 gap-2 sm:gap-3 text-center text-xs sm:text-sm">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div key={day} className="font-bold">{day}</div>
             ))}
@@ -307,10 +313,10 @@ function App() {
               const count = completionCounts[dateStr] || 0;
               const isPast = day <= now.getDate();
               return (
-                <div key={day} className="relative flex items-center justify-center h-10">
+                <div key={day} className="relative flex items-center justify-center h-8 sm:h-10">
                   {isPast ? (
                     <div
-                      className="w-6 h-6 rounded-full"
+                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
                       style={getColor(count)}
                       title={`${count}/${totalHabits} completions`}
                     />
@@ -321,13 +327,11 @@ function App() {
             })}
           </div>
         </div>
-        <div className="mt-12 pt-6" style={{ borderTop: `1px solid var(--bg-tertiary)` }}>
-          <h2 className="text-xl font-bold mb-4">Testing Tools</h2>
-          <DateSetter
-            onDateSet={initializeData}
-            currentDate={currentDate}
-          />
+        <div className="mt-12 sm:mt-16 pt-6" style={{ borderTop: `1px solid var(--bg-tertiary)` }}>
+          <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Testing Tools</h2>
+          <DateSetter onDateSet={initializeData} currentDate={currentDate} />
         </div>
+        <WhyThisAppIsCool />
       </div>
     </div>
   );
